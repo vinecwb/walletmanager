@@ -1,36 +1,27 @@
 package com.example.walletmanager.walletmanager;
 
+import com.example.walletmanager.domain.entity.Wallet;
+import com.example.walletmanager.domain.service.WalletService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/v1/wallet")
+@RequiredArgsConstructor
+@Slf4j
 public class WMController {
 
+    private final WalletService walletService;
+
     @PostMapping("/save")
-    public ResponseEntity<String> save(@RequestBody MyRequest myRequest) {
-        return ResponseEntity.ok("Dados recebidos com sucesso!");
-    }
-}
+    public ResponseEntity<String> save(@RequestBody Wallet wallet) {
+        log.info("Transação recebida com sucesso: transação: {}, wallet: {}, person_id: {}, description: {}",
+                wallet.getTransactionId(), wallet.getWalletId(), wallet.getPersonId(), wallet.getDescription());
 
-class MyRequest {
-    private String field1;
-    private int field2;
+        Wallet savedWallet = walletService.save(wallet);
 
-    // Getters e Setters
-    public String getField1() {
-        return field1;
-    }
-
-    public void setField1(String field1) {
-        this.field1 = field1;
-    }
-
-    public int getField2() {
-        return field2;
-    }
-
-    public void setField2(int field2) {
-        this.field2 = field2;
+        return ResponseEntity.ok("Transação salva com sucesso: " + savedWallet.getId());
     }
 }
